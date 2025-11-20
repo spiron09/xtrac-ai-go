@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/base64"
-	"fmt"
 	"strings"
 
 	"github.com/k3a/html2text"
@@ -90,10 +89,10 @@ func findPartByMimeType(parts []*gmail.MessagePart, mimeType string) *gmail.Mess
 }
 
 func parseTextPlain(m *gmail.Message) (string, error) {
-	fmt.Println("Parsing text/plain")
+	// fmt.Println("Parsing text/plain")
 	p := m.Payload
 	if p == nil || p.Body == nil {
-		fmt.Println("text/plain: no payload/body")
+		// fmt.Println("text/plain: no payload/body")
 		return "", nil
 	}
 	
@@ -109,10 +108,10 @@ func parseTextPlain(m *gmail.Message) (string, error) {
 }
 
 func parseTextHtml(m *gmail.Message) (string, error) {
-	fmt.Println("Parsing text/html")
+	// fmt.Println("Parsing text/html")
 	p := m.Payload
 	if p == nil || p.Body == nil {
-		fmt.Println("text/html: no payload/body")
+		// fmt.Println("text/html: no payload/body")
 		return "", nil
 	}
 	
@@ -130,10 +129,10 @@ func parseTextHtml(m *gmail.Message) (string, error) {
 }
 
 func parseMultipartAlternative(m *gmail.Message) (string, error) {
-	fmt.Println("Parsing multipart/alternative")
+	// fmt.Println("Parsing multipart/alternative")
 	p := m.Payload
 	if p == nil {
-		fmt.Println("multipart/alternative: no payload")
+		// fmt.Println("multipart/alternative: no payload")
 		return "", nil
 	}
 	
@@ -153,15 +152,15 @@ func parseMultipartAlternative(m *gmail.Message) (string, error) {
 		return extractContentFromPart(p.Parts[0])
 	}
 	
-	fmt.Println("multipart/alternative: no parts found")
+	// fmt.Println("multipart/alternative: no parts found")
 	return "", nil
 }
 
 func parseMultipartMixed(m *gmail.Message) (string, error) {
-	fmt.Println("Parsing multipart/mixed")
+	// fmt.Println("Parsing multipart/mixed")
 	p := m.Payload
 	if p == nil {
-		fmt.Println("multipart/mixed: no payload")
+		// fmt.Println("multipart/mixed: no payload")
 		return "", nil
 	}
 	

@@ -1,7 +1,15 @@
 package main
 
+import (
+	"github.com/joho/godotenv"
+)
+
 func main() {
+	godotenv.Load()
+	
 	run_pipeline()
+	// fmt.Println(os.Getenv("GOOGLE_API_KEY"))
+	// agent_init()
 	
 	// r, err := srv.Users.Labels.List("me").Do()
 	// if err != nil {

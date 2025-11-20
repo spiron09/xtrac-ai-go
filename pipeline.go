@@ -2,16 +2,19 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 
+	"github.com/567-labs/instructor-go/pkg/instructor"
 	"github.com/jszwec/csvutil"
 )
 
 type Transaction struct {
 	Id				string
 	Date			string
-	Amount			string
+	Amount			float64
+	Currency		string
 	Recipient		string
 	Body			string
 	InstrumentName	string
@@ -30,8 +33,23 @@ type CardRow struct {
 }
 
 type State struct {
-	CardConfig []CardRow
-	Transactions []Transaction
+	CardConfig		[]CardRow
+	Transactions	[]Transaction
+}
+
+func (st *State) populate_agent_response(client *instructor.InstructorOpenAI){
+	for i, txn := range st.Transactions {
+		agentResp,err := get_agent_response(client,txn.Body)
+		fmt.Printf("\n-------------Agent Response--------------\n%+v",agentResp)
+		if err != nil {
+			fmt.Println("error getting data for transaction",txn.Id)
+			continue
+		}
+		txn.Amount = agentResp.Amount
+		txn.Recipient = agentResp.Recipient
+		txn.Currency = agentResp.Currency
+		st.Transactions[i] = txn
+	}
 }
 
 func run_pipeline(){
@@ -45,9 +63,9 @@ func run_pipeline(){
 	if err != nil {
 		log.Fatalf("Unable to unmarshal the file %v",err)
 	}
-	st := State{
-		CardConfig: rows,
-		Transactions: make([]Transaction, 0), // Initialize as empty slice
+	st := State{	
+		CardConfig: 	rows,
+		Transactions: 	make([]Transaction, 0), // Initialize as empty slice
 	}
 	
 	//auth
@@ -57,7 +75,7 @@ func run_pipeline(){
 	}
 	
 	
-	q , err := st.build_query("2025-09-01","2025-09-30")
+	q , err := st.build_query("2025-11-01","2025-11-30")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -72,14 +90,22 @@ func run_pipeline(){
 		log.Fatal(err)
 	}
 
+
+	client := agent_init()
+	st.populate_agent_response(client)
+	
 	jsonData, err := json.Marshal(st.Transactions)
 	if err != nil {
 		log.Fatalf("Error marshaling JSON: %v", err)
 	}
-
 	// Write JSON to file
 	err = os.WriteFile("./test_data/transactions.json", jsonData, 0644)
 	if err != nil {
 		log.Fatalf("Error writing JSON to file: %v", err)
 	}
+	
+	// if err != nil {
+	// 	log.Fatalf("Error while initializing the agent: %v",err)
+	// }
+	
 }

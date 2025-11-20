@@ -39,7 +39,7 @@ func(st *State) fetch_emails(srv *gmail.Service,query string) ([]*gmail.Message,
 		return nil,err
 	}
 	msgs := response.Messages
-	// msgs = msgs[:5]
+	// msgs = msgs[:2]
 	
 	messages := []*gmail.Message{}
 	for _,m := range msgs {
@@ -59,7 +59,8 @@ func (st *State) build_transaction(id, content, date, mimeType string) {
 			txn := Transaction {
 				Id: id,
 				Date: date,
-				Amount: "",
+				Amount: 0.0,
+				Currency: "",
 				Recipient: "",
 				Body: content,
 				InstrumentName: card.InstrumentName,
@@ -70,8 +71,8 @@ func (st *State) build_transaction(id, content, date, mimeType string) {
 			
 			st.Transactions = append(st.Transactions, txn)
 			fmt.Printf("Transaction found for card ending in %s\n", card.Last4)
-			fmt.Println("-----")
-			fmt.Printf("%+v\n",txn)
+			// fmt.Println("-----")
+			// fmt.Printf("%+v\n",txn)
 		}
 	}
 }

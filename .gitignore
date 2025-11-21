@@ -1,3 +1,8 @@
 credentials.json
 token.json
 .env
+logs/
+test_data/
+cards_config.csv
+transactions.json
+xtrac
